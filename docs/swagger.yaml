@@ -1,0 +1,204 @@
+basePath: /v1
+definitions:
+  api.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: string
+    type: object
+  model.User:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.UserInfo:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      sayHello:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  user.CreateRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  user.CreateResponse:
+    properties:
+      username:
+        type: string
+    type: object
+  user.ListResponse:
+    properties:
+      totalCount:
+        type: integer
+      userList:
+        items:
+          $ref: '#/definitions/model.UserInfo'
+        type: array
+    type: object
+  user.Token:
+    properties:
+      token:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: 1872314654@qq.com
+    name: mxy
+    url: http://www.swagger.io/suport
+  description: apiserver demo
+  license: {}
+  title: Apiserver Example API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      parameters:
+      - description: 用户名
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: 密码
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message:"OK","data":{"token":"xxxxxx"}}'
+          schema:
+            $ref: '#/definitions/user.Token'
+      summary: 用户登录
+  /user:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"totalCount":10,"userList":[{"id":0,"username":"xiaoming","sayHello":"Hello,xxx","password":"xxx","createdAt":"2020-06-09 12:31:21","updateAt":"2020-06-09 12:31:12"}]}}'
+          schema:
+            $ref: '#/definitions/user.ListResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户列表
+    post:
+      consumes:
+      - application/json
+      description: Add a new user
+      parameters:
+      - description: create a new user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"username":"xiaoming"}}'
+          schema:
+            $ref: '#/definitions/user.CreateResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add new user to the database
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":null}'
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除一个用户
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 更新用户 id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 需要更新的用户信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":null}'
+          schema:
+            $ref: '#/definitions/api.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: 更新用户信息
+  /user/{username}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户名
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"username":"xiaoming","password":"xxxx"}}'
+          schema:
+            $ref: '#/definitions/model.User'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取用户的详细信息
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
